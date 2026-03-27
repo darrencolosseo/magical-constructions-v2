@@ -1,93 +1,166 @@
-import { motion } from 'framer-motion'
+import { useRef } from 'react'
+import { motion, useScroll, useTransform } from 'framer-motion'
 
 export default function Hero() {
+  const ref = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
+  const imageY = useTransform(scrollYProgress, [0, 1], ['0%', '20%'])
+  const opacity = useTransform(scrollYProgress, [0, 0.6], [1, 0])
+  const textY = useTransform(scrollYProgress, [0, 1], ['0%', '15%'])
+
   return (
-    <section style={{ height: '100vh', display: 'grid', gridTemplateColumns: '60fr 40fr', overflow: 'hidden', position: 'relative' }}>
-      {/* Left: full-height image */}
-      <div style={{ position: 'relative', overflow: 'hidden' }}>
+    <section ref={ref} style={{ position: 'relative', height: '100vh', minHeight: 700, overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
+      {/* Parallax image */}
+      <motion.div style={{ position: 'absolute', inset: '-10%', y: imageY }}>
         <img
           src="/images/hero-bg.jpg"
-          alt="Magical Constructions — Premium Sydney Builder"
-          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
+          alt=""
+          style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center 30%' }}
         />
-        {/* Subtle dark overlay only at bottom */}
-        <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '40%', background: 'linear-gradient(to top, rgba(28,26,24,0.5) 0%, transparent 100%)' }} />
-        {/* Caption bottom left */}
-        <div style={{ position: 'absolute', bottom: 40, left: 48, color: '#FAF7F4' }}>
-          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 400, letterSpacing: '0.2em', textTransform: 'uppercase', opacity: 0.7 }}>
-            Northwood, Sydney · Aluminium Batten Facade
-          </span>
-        </div>
-      </div>
+      </motion.div>
 
-      {/* Right: content panel */}
-      <div style={{
-        background: '#FAF7F4',
-        display: 'flex', flexDirection: 'column', justifyContent: 'center',
-        padding: '0 64px',
-        borderLeft: '1px solid #E2D8CE',
-        position: 'relative',
-      }}>
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, delay: 0.3 }}>
-          <div className="label-sm" style={{ marginBottom: 24 }}>Sydney · Est. 2020</div>
+      {/* Overlays */}
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(105deg, rgba(26,24,21,0.72) 0%, rgba(26,24,21,0.35) 55%, rgba(26,24,21,0.15) 100%)' }} />
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(26,24,21,0.5) 0%, transparent 50%)' }} />
 
-          <h1 style={{
-            fontFamily: "'Playfair Display', serif",
-            fontSize: 'clamp(40px, 4vw, 60px)',
-            fontWeight: 500,
-            lineHeight: 1.15,
-            color: '#1C1A18',
-            marginBottom: 24,
-            letterSpacing: '-0.02em',
-          }}>
-            Crafted<br />
-            <em style={{ fontStyle: 'italic', fontWeight: 400 }}>for the finest</em><br />
-            Sydney homes.
-          </h1>
-
-          <p style={{
-            fontFamily: "'Inter', sans-serif", fontSize: 15, fontWeight: 300,
-            color: '#6B5E52', lineHeight: 1.75, maxWidth: 340, marginBottom: 48,
-          }}>
-            Premium composite decking, cladding & architectural builds — delivered with meticulous attention to every detail.
-          </p>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <a href="#contact" style={{
-              display: 'inline-block', background: '#1C1A18', color: '#FAF7F4',
-              padding: '16px 32px', fontFamily: "'Inter'", fontSize: 11, fontWeight: 400,
-              letterSpacing: '0.18em', textTransform: 'uppercase', alignSelf: 'flex-start',
-              transition: 'background 0.3s',
-            }}
-              onMouseEnter={e => (e.currentTarget.style.background = '#3A3530')}
-              onMouseLeave={e => (e.currentTarget.style.background = '#1C1A18')}
-            >Request a Quote</a>
-
-            <a href="#projects" style={{
-              display: 'inline-flex', alignItems: 'center', gap: 8,
-              fontFamily: "'Inter'", fontSize: 11, fontWeight: 400, letterSpacing: '0.16em',
-              textTransform: 'uppercase', color: '#9A8A7A',
-              transition: 'color 0.2s',
-            }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#1C1A18')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#9A8A7A')}
-            >View Our Work →</a>
-          </div>
+      {/* Content */}
+      <motion.div
+        style={{ position: 'relative', zIndex: 10, padding: '0 72px', maxWidth: 900, y: textY, opacity }}
+      >
+        {/* Label */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+          style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 40 }}
+        >
+          <div style={{ width: 40, height: 1, background: '#B8977A' }} />
+          <span className="label-sm" style={{ color: 'rgba(248,245,240,0.7)' }}>Sydney · Est. 2020</span>
         </motion.div>
 
-        {/* Bottom: stat strip */}
-        <div style={{ position: 'absolute', bottom: 0, right: 0, width: '100%', borderTop: '1px solid #E2D8CE', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 0 }}>
-          {[['150+', 'Projects'], ['5★', 'Google Rated']].map(([n, l], i) => (
-            <div key={l} style={{
-              padding: '20px 32px',
-              borderLeft: i > 0 ? '1px solid #E2D8CE' : 'none',
-            }}>
-              <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 28, fontWeight: 500, color: '#1C1A18' }}>{n}</div>
-              <div className="label-sm" style={{ marginTop: 4 }}>{l}</div>
-            </div>
-          ))}
+        {/* Headline */}
+        <div style={{ overflow: 'hidden', marginBottom: 8 }}>
+          <motion.h1
+            initial={{ y: '100%', opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 1.1, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: 'clamp(56px, 7vw, 96px)',
+              fontWeight: 300,
+              color: '#F8F5F0',
+              lineHeight: 1.0,
+              letterSpacing: '-0.01em',
+            }}
+          >
+            Built for
+          </motion.h1>
         </div>
-      </div>
+        <div style={{ overflow: 'hidden', marginBottom: 48 }}>
+          <motion.h1
+            initial={{ y: '100%', opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 1.1, delay: 0.65, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: 'clamp(56px, 7vw, 96px)',
+              fontWeight: 300,
+              color: '#F8F5F0',
+              lineHeight: 1.0,
+              letterSpacing: '-0.01em',
+              fontStyle: 'italic',
+            }}
+          >
+            the finest homes.
+          </motion.h1>
+        </div>
+
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: 15,
+            color: 'rgba(248,245,240,0.65)',
+            maxWidth: 480,
+            fontWeight: 300,
+            lineHeight: 1.8,
+            marginBottom: 48,
+            letterSpacing: '0.01em',
+          }}
+        >
+          Premium cladding, composite decking & architectural builds — crafted with precision for Sydney's most discerning homes.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 1.1, ease: [0.16, 1, 0.3, 1] }}
+          style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center' }}
+        >
+          <a href="#contact" className="btn-primary" style={{ background: '#B8977A' }}>
+            <span>Request a Quote</span>
+          </a>
+          <a href="#projects" style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: 10,
+            letterSpacing: '0.22em',
+            textTransform: 'uppercase',
+            color: 'rgba(248,245,240,0.7)',
+            fontWeight: 400,
+            display: 'flex', alignItems: 'center', gap: 12,
+            transition: 'color 0.3s ease',
+          }}
+          onMouseEnter={e => (e.currentTarget.style.color = '#F8F5F0')}
+          onMouseLeave={e => (e.currentTarget.style.color = 'rgba(248,245,240,0.7)')}
+          >
+            <span>View Projects</span>
+            <span style={{ display: 'inline-block', transition: 'transform 0.3s ease' }}>→</span>
+          </a>
+        </motion.div>
+      </motion.div>
+
+      {/* Bottom bar */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.2, delay: 1.4 }}
+        style={{
+          position: 'absolute', bottom: 0, left: 0, right: 0, zIndex: 10,
+          display: 'flex', borderTop: '1px solid rgba(248,245,240,0.1)',
+        }}
+      >
+        {[
+          { value: '150+', label: 'Projects Completed' },
+          { value: '8+', label: 'Years Experience' },
+          { value: '5★', label: 'Google Rating' },
+          { value: '100%', label: 'Sydney Based' },
+        ].map((stat, i) => (
+          <div key={i} style={{
+            flex: 1,
+            padding: '24px 32px',
+            borderRight: i < 3 ? '1px solid rgba(248,245,240,0.1)' : 'none',
+            background: 'rgba(26,24,21,0.4)',
+            backdropFilter: 'blur(8px)',
+          }}>
+            <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 28, fontWeight: 400, color: '#F8F5F0', lineHeight: 1 }}>{stat.value}</div>
+            <div className="label-sm" style={{ color: 'rgba(248,245,240,0.5)', marginTop: 6 }}>{stat.label}</div>
+          </div>
+        ))}
+      </motion.div>
+
+      {/* Scroll indicator */}
+      <motion.div
+        animate={{ y: [0, 8, 0] }}
+        transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+        style={{
+          position: 'absolute', bottom: 120, right: 72, zIndex: 10,
+          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8,
+        }}
+      >
+        <div style={{ width: 1, height: 48, background: 'rgba(184,151,122,0.6)' }} />
+      </motion.div>
     </section>
   )
 }

@@ -1,69 +1,132 @@
-import { useState } from 'react'
-import { motion } from 'framer-motion'
+import { useState, useRef } from 'react'
+import { motion, useInView, AnimatePresence } from 'framer-motion'
 
-const cats = ['All', 'Decking', 'Cladding', 'Interior', 'Alfresco']
 const items = [
-  { img: 'gallery-01.jpg', name: 'Composite Estate Deck', suburb: 'Harrington Park', cat: 'Decking' },
-  { img: 'gallery-02.jpg', name: 'Merbau Hardwood', suburb: 'Sydney', cat: 'Decking' },
-  { img: 'gallery-03.jpg', name: 'Golden Hour Reflection', suburb: 'Oatley', cat: 'Decking' },
-  { img: 'gallery-04.jpg', name: 'Batten Ceiling Interior', suburb: 'Sydney', cat: 'Interior' },
-  { img: 'gallery-05.jpg', name: 'Composite Pool Surround', suburb: 'Harrington Park', cat: 'Decking' },
-  { img: 'gallery-06.jpg', name: 'Freshly Oiled Deck', suburb: 'Sydney', cat: 'Decking' },
-  { img: 'gallery-07.jpg', name: 'Aluminium Batten Facade', suburb: 'Northwood', cat: 'Cladding' },
-  { img: 'gallery-08.jpg', name: 'Alfresco Kitchen', suburb: 'Baulkham Hills', cat: 'Alfresco' },
-  { img: 'gallery-09.jpg', name: 'Charcoal Deck & Cladding', suburb: 'Sydney', cat: 'Decking' },
-  { img: 'gallery-10.jpg', name: 'Estate Composite Deck', suburb: 'Harrington Park', cat: 'Decking' },
-  { img: 'gallery-11.jpg', name: 'Hardwood & Stone', suburb: 'Sydney', cat: 'Decking' },
-  { img: 'gallery-12.jpg', name: 'Alfresco + Cladding', suburb: 'Towradgi', cat: 'Cladding' },
+  { img: '/images/gallery-01.jpg', title: 'Composite Pool Deck', suburb: 'Mosman', cat: 'decking' },
+  { img: '/images/gallery-02.jpg', title: 'Hardwood Entertainer', suburb: 'Balmoral', cat: 'decking' },
+  { img: '/images/gallery-03.jpg', title: 'Aluminium Facade', suburb: 'Northwood', cat: 'cladding' },
+  { img: '/images/gallery-04.jpg', title: 'Pool Surround', suburb: 'Cremorne', cat: 'decking' },
+  { img: '/images/gallery-05.jpg', title: 'Timber Batten Screen', suburb: 'Lane Cove', cat: 'cladding' },
+  { img: '/images/gallery-06.jpg', title: 'Alfresco Kitchen', suburb: 'Willoughby', cat: 'alfresco' },
+  { img: '/images/gallery-07.jpg', title: 'Interior Renovation', suburb: 'Neutral Bay', cat: 'interior' },
+  { img: '/images/gallery-08.jpg', title: 'Cladding & Deck', suburb: 'Chatswood', cat: 'cladding' },
+  { img: '/images/gallery-09.jpg', title: 'Full Build', suburb: 'Longueville', cat: 'decking' },
+  { img: '/images/gallery-10.jpg', title: 'Composite Decking', suburb: 'Artarmon', cat: 'decking' },
+  { img: '/images/gallery-11.jpg', title: 'Facade Cladding', suburb: 'St Leonards', cat: 'cladding' },
+  { img: '/images/gallery-12.jpg', title: 'Alfresco Build', suburb: 'Pymble', cat: 'alfresco' },
 ]
 
-function Item({ item, active }: { item: typeof items[0]; active: boolean }) {
-  const [hovered, setHovered] = useState(false)
-  return (
-    <div onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-      style={{ position: 'relative', overflow: 'hidden', aspectRatio: '1/1', cursor: 'pointer', opacity: active ? 1 : 0.2, transition: 'opacity 0.4s, transform 0.4s', transform: active ? 'scale(1)' : 'scale(0.98)' }}>
-      <img src={`/images/${item.img}`} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.7s ease', transform: hovered ? 'scale(1.06)' : 'scale(1)' }} />
-      {/* Hover overlay — light cream, not dark */}
-      <div style={{ position: 'absolute', inset: 0, background: 'rgba(250,247,244,0.88)', opacity: hovered ? 1 : 0, transition: 'opacity 0.4s', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 6 }}>
-        <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 16, fontWeight: 500, color: '#1C1A18', textAlign: 'center', padding: '0 16px' }}>{item.name}</div>
-        <div className="label-sm" style={{ color: '#9A8A7A' }}>{item.suburb}</div>
-      </div>
-    </div>
-  )
-}
+const filters = ['All', 'Decking', 'Cladding', 'Interior', 'Alfresco']
 
 export default function Gallery() {
   const [active, setActive] = useState('All')
-  return (
-    <section id="projects" style={{ background: '#FAF7F4', padding: '120px 56px', borderTop: '1px solid #E2D8CE' }}>
-      <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
-          style={{ marginBottom: 56 }}>
-          <div className="label-sm" style={{ marginBottom: 16 }}>Our Work</div>
-          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', flexWrap: 'wrap', gap: 24 }}>
-            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(36px, 4vw, 52px)', fontWeight: 500, color: '#1C1A18', letterSpacing: '-0.02em' }}>
-              Recent<br /><em style={{ fontStyle: 'italic', fontWeight: 400 }}>projects.</em>
-            </h2>
-            {/* Filter pills */}
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {cats.map(c => (
-                <button key={c} onClick={() => setActive(c)} style={{
-                  padding: '8px 20px', border: `1px solid ${active === c ? '#1C1A18' : '#E2D8CE'}`,
-                  background: active === c ? '#1C1A18' : 'transparent',
-                  color: active === c ? '#FAF7F4' : '#6B5E52',
-                  fontFamily: "'Inter'", fontSize: 11, fontWeight: 400, letterSpacing: '0.12em', textTransform: 'uppercase',
-                  transition: 'all 0.25s',
-                }}>{c}</button>
-              ))}
-            </div>
-          </div>
-        </motion.div>
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-80px' })
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 3 }}>
-          {items.map(item => (
-            <Item key={item.img} item={item} active={active === 'All' || item.cat === active} />
-          ))}
+  const filtered = active === 'All' ? items : items.filter(i => i.cat === active.toLowerCase())
+
+  return (
+    <section id="projects" style={{ padding: '140px 72px', background: '#F8F5F0' }}>
+      {/* Header */}
+      <div ref={ref} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 60 }}>
+        <div>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={inView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 24 }}
+          >
+            <div style={{ width: 32, height: 1, background: '#B8977A' }} />
+            <span className="label-sm">Our Projects</span>
+          </motion.div>
+          <div style={{ overflow: 'hidden' }}>
+            <motion.h2
+              initial={{ y: '100%' }}
+              animate={inView ? { y: 0 } : {}}
+              transition={{ duration: 0.9, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: 'clamp(42px, 5vw, 68px)',
+                fontWeight: 300,
+                color: '#1A1815',
+                lineHeight: 1.1,
+              }}
+            >
+              The work speaks<br /><em>for itself.</em>
+            </motion.h2>
+          </div>
         </div>
+
+        {/* Filters */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          style={{ display: 'flex', gap: 4 }}
+        >
+          {filters.map(f => (
+            <button
+              key={f}
+              onClick={() => setActive(f)}
+              style={{
+                padding: '10px 20px',
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 10,
+                letterSpacing: '0.2em',
+                textTransform: 'uppercase',
+                fontWeight: 400,
+                background: active === f ? '#1A1815' : 'transparent',
+                color: active === f ? '#F8F5F0' : '#6B5E52',
+                border: '1px solid',
+                borderColor: active === f ? '#1A1815' : 'rgba(26,24,21,0.15)',
+                transition: 'all 0.3s ease',
+                cursor: 'pointer',
+              }}
+            >
+              {f}
+            </button>
+          ))}
+        </motion.div>
+      </div>
+
+      {/* Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 3 }}>
+        <AnimatePresence mode="popLayout">
+          {filtered.map((item, i) => (
+            <motion.div
+              key={item.img}
+              layout
+              initial={{ opacity: 0, scale: 0.97 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.97 }}
+              transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              style={{ position: 'relative', overflow: 'hidden', aspectRatio: i % 5 === 0 ? '4/5' : '4/3', cursor: 'pointer' }}
+              whileHover="hover"
+            >
+              <motion.img
+                variants={{ hover: { scale: 1.06 } }}
+                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                src={item.img}
+                alt={item.title}
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              />
+              <motion.div
+                variants={{ hover: { opacity: 1 } }}
+                initial={{ opacity: 0 }}
+                transition={{ duration: 0.35 }}
+                style={{
+                  position: 'absolute', inset: 0,
+                  background: 'rgba(26,24,21,0.65)',
+                  display: 'flex', flexDirection: 'column', justifyContent: 'flex-end',
+                  padding: 28,
+                }}
+              >
+                <div className="label-sm" style={{ color: '#B8977A', marginBottom: 6 }}>{item.suburb}</div>
+                <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 22, fontWeight: 400, color: '#F8F5F0' }}>{item.title}</div>
+              </motion.div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
     </section>
   )

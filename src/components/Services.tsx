@@ -1,68 +1,163 @@
-import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { ArrowUpRight } from 'lucide-react'
+import { useState, useRef } from 'react'
+import { motion, useInView } from 'framer-motion'
 
 const services = [
-  { name: 'Composite Decking', tag: 'Outdoor Living', img: '/images/service-decking-composite.jpg', desc: 'Large-format boards, pool surrounds & precision framing. Built to last decades.' },
-  { name: 'Hardwood Decking', tag: 'Natural Timber', img: '/images/service-decking-hardwood.jpg', desc: 'Spotted gum, merbau & ironbark. Freshly oiled. Finished to perfection.' },
-  { name: 'Cladding & Facades', tag: 'Exterior Architecture', img: '/images/service-cladding.jpg', desc: 'Architectural batten profiles & castellated facade transformations.' },
-  { name: 'Interior Renovations', tag: 'Interior Finishes', img: '/images/service-interior.jpg', desc: 'Timber batten ceilings, feature walls & high-end interior finishes.' },
-  { name: 'Alfresco Kitchens', tag: 'Outdoor Entertaining', img: '/images/service-alfresco.jpg', desc: 'Custom outdoor kitchens built for the way Australians really live.' },
-  { name: 'Full Builds', tag: 'End-to-End', img: '/images/service-builds.jpg', desc: 'Architecturally considered. Flawlessly executed. Start to finish.' },
+  { title: 'Composite Decking', category: 'Outdoor Living', img: '/images/service-decking-composite.jpg', desc: 'Large-format boards, pool surrounds & precision framing built to last decades.' },
+  { title: 'Hardwood Decking', category: 'Outdoor Living', img: '/images/service-decking-hardwood.jpg', desc: 'Spotted gum, blackbutt & ironbark — sourced, cut and finished on-site.' },
+  { title: 'Cladding & Facades', category: 'Exteriors', img: '/images/service-cladding.jpg', desc: "Aluminium batten, fibre cement & timber — transforming your home's first impression." },
+  { title: 'Interior Renovations', category: 'Interiors', img: '/images/service-interior.jpg', desc: 'Full-scope internal remodels with architectural joinery and premium finishes.' },
+  { title: 'Alfresco Kitchens', category: 'Outdoor Living', img: '/images/service-alfresco.jpg', desc: 'Custom outdoor kitchens and entertaining spaces built for the Sydney lifestyle.' },
+  { title: 'Full Builds', category: 'Construction', img: '/images/service-builds.jpg', desc: 'End-to-end project management for extensions, granny flats and new builds.' },
 ]
 
-function Card({ s, i }: { s: typeof services[0]; i: number }) {
+function ServiceCard({ service, index }: { service: typeof services[0]; index: number }) {
   const [hovered, setHovered] = useState(false)
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-60px' })
+
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-60px' }} transition={{ duration: 0.6, delay: (i % 3) * 0.1 }}
-      onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
-      style={{ cursor: 'pointer' }}
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 50 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.9, delay: (index % 3) * 0.12, ease: [0.16, 1, 0.3, 1] }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        position: 'relative',
+        overflow: 'hidden',
+        cursor: 'pointer',
+        aspectRatio: '4/5',
+      }}
     >
       {/* Image */}
-      <div style={{ overflow: 'hidden', aspectRatio: '4/3', marginBottom: 20 }}>
-        <img src={s.img} alt={s.name} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.7s ease', transform: hovered ? 'scale(1.05)' : 'scale(1)' }} />
+      <motion.img
+        src={service.img}
+        alt={service.title}
+        animate={{ scale: hovered ? 1.06 : 1 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+      />
+
+      {/* Default overlay */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'linear-gradient(to top, rgba(26,24,21,0.75) 0%, transparent 50%)',
+      }} />
+
+      {/* Hover overlay */}
+      <motion.div
+        animate={{ opacity: hovered ? 1 : 0 }}
+        transition={{ duration: 0.4 }}
+        style={{
+          position: 'absolute', inset: 0,
+          background: 'rgba(26,24,21,0.65)',
+        }}
+      />
+
+      {/* Content */}
+      <div style={{ position: 'absolute', inset: 0, padding: 32, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+        <div className="label-sm" style={{ color: '#B8977A', marginBottom: 8 }}>{service.category}</div>
+        <h3 style={{
+          fontFamily: "'Cormorant Garamond', serif",
+          fontSize: 26,
+          fontWeight: 400,
+          color: '#F8F5F0',
+          lineHeight: 1.2,
+          marginBottom: 12,
+        }}>{service.title}</h3>
+
+        <motion.p
+          animate={{ opacity: hovered ? 1 : 0, y: hovered ? 0 : 8 }}
+          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            fontFamily: "'Inter', sans-serif",
+            fontSize: 13,
+            color: 'rgba(248,245,240,0.75)',
+            fontWeight: 300,
+            lineHeight: 1.65,
+            marginBottom: 20,
+          }}
+        >
+          {service.desc}
+        </motion.p>
+
+        <motion.div
+          animate={{ opacity: hovered ? 1 : 0, y: hovered ? 0 : 8 }}
+          transition={{ duration: 0.4, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
+          style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            fontFamily: "'Inter', sans-serif", fontSize: 10,
+            letterSpacing: '0.2em', textTransform: 'uppercase',
+            color: '#B8977A', fontWeight: 400,
+          }}
+        >
+          <span>Learn More</span>
+          <span>→</span>
+        </motion.div>
       </div>
-      {/* Text */}
-      <div style={{ paddingBottom: 32, borderBottom: '1px solid #E2D8CE' }}>
-        <div className="label-sm" style={{ marginBottom: 10 }}>{s.tag}</div>
-        <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 500, color: '#1C1A18', marginBottom: 10, letterSpacing: '-0.01em' }}>{s.name}</h3>
-        <p style={{ fontSize: 13, color: '#6B5E52', lineHeight: 1.7, fontWeight: 300, marginBottom: 16 }}>{s.desc}</p>
-        <span style={{
-          display: 'inline-flex', alignItems: 'center', gap: 6,
-          fontSize: 11, fontWeight: 400, letterSpacing: '0.14em', textTransform: 'uppercase',
-          color: hovered ? '#1C1A18' : '#9A8A7A', transition: 'color 0.2s',
-        }}>
-          Learn More <ArrowUpRight size={12} strokeWidth={1.5} />
-        </span>
-      </div>
-    </motion.article>
+    </motion.div>
   )
 }
 
 export default function Services() {
-  return (
-    <section id="services" style={{ background: '#FAF7F4', padding: '120px 56px' }}>
-      <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-        {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
-          style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 72, borderBottom: '1px solid #E2D8CE', paddingBottom: 40 }}>
-          <div>
-            <div className="label-sm" style={{ marginBottom: 16 }}>What We Build</div>
-            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(36px, 4vw, 56px)', fontWeight: 500, color: '#1C1A18', lineHeight: 1.1, letterSpacing: '-0.02em' }}>
-              Every service,<br /><em style={{ fontStyle: 'italic', fontWeight: 400 }}>crafted with care.</em>
-            </h2>
-          </div>
-          <p style={{ maxWidth: 340, fontSize: 14, color: '#6B5E52', lineHeight: 1.7, fontWeight: 300 }}>
-            From the first site visit to the final coat of oil, we manage every aspect of your project with precision and care.
-          </p>
-        </motion.div>
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-80px' })
 
-        {/* Grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '48px 40px' }}>
-          {services.map((s, i) => <Card key={s.name} s={s} i={i} />)}
+  return (
+    <section id="services" style={{ padding: '140px 72px', background: '#F8F5F0' }}>
+      {/* Header */}
+      <div ref={ref} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 72 }}>
+        <div>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={inView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+            style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 24 }}
+          >
+            <div style={{ width: 32, height: 1, background: '#B8977A' }} />
+            <span className="label-sm">What We Build</span>
+          </motion.div>
+          <div style={{ overflow: 'hidden' }}>
+            <motion.h2
+              initial={{ y: '100%' }}
+              animate={inView ? { y: 0 } : {}}
+              transition={{ duration: 0.9, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: 'clamp(42px, 5vw, 68px)',
+                fontWeight: 300,
+                color: '#1A1815',
+                lineHeight: 1.1,
+              }}
+            >
+              Every service,<br /><em>crafted with care.</em>
+            </motion.h2>
+          </div>
         </div>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : {}}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          style={{
+            maxWidth: 320,
+            fontFamily: "'Inter', sans-serif",
+            fontSize: 14,
+            color: '#6B5E52',
+            fontWeight: 300,
+            lineHeight: 1.8,
+            textAlign: 'right',
+          }}
+        >
+          From the first site visit to the final coat of oil, we manage every aspect of your project with precision and care.
+        </motion.p>
+      </div>
+
+      {/* Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 2 }}>
+        {services.map((service, i) => (
+          <ServiceCard key={i} service={service} index={i} />
+        ))}
       </div>
     </section>
   )

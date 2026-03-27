@@ -1,77 +1,157 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X } from 'lucide-react'
 
 export default function Nav() {
   const [scrolled, setScrolled] = useState(false)
-  const [open, setOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
-    const fn = () => setScrolled(window.scrollY > 60)
-    window.addEventListener('scroll', fn)
-    return () => window.removeEventListener('scroll', fn)
+    const handler = () => setScrolled(window.scrollY > 60)
+    window.addEventListener('scroll', handler)
+    return () => window.removeEventListener('scroll', handler)
   }, [])
 
-  const links = ['Services', 'Projects', 'Process', 'Contact']
+  const links = [
+    { label: 'Services', href: '#services' },
+    { label: 'Projects', href: '#projects' },
+    { label: 'Process', href: '#process' },
+    { label: 'Contact', href: '#contact' },
+  ]
 
   return (
     <>
-      <nav style={{
-        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
-        padding: '0 56px',
-        height: 72,
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        background: scrolled ? 'rgba(250,247,244,0.96)' : 'transparent',
-        borderBottom: scrolled ? '1px solid #E2D8CE' : '1px solid transparent',
-        backdropFilter: scrolled ? 'blur(16px)' : 'none',
-        transition: 'all 0.5s ease',
-      }}>
+      <motion.nav
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 100,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: scrolled ? '18px 48px' : '28px 48px',
+          background: scrolled ? 'rgba(248,245,240,0.95)' : 'transparent',
+          backdropFilter: scrolled ? 'blur(12px)' : 'none',
+          borderBottom: scrolled ? '1px solid rgba(26,24,21,0.06)' : 'none',
+          transition: 'all 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+        }}
+      >
         {/* Logo */}
-        <a href="#" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontFamily: "'Playfair Display', serif", fontSize: 22, fontWeight: 600, color: '#1C1A18', letterSpacing: '-0.01em' }}>MC</span>
-          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 10, fontWeight: 400, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#9A8A7A' }}>Magical Constructions</span>
+        <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
+          <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 22, fontWeight: 500, color: '#1A1815', letterSpacing: '0.02em' }}>MC</span>
+          <span style={{ width: 1, height: 18, background: 'rgba(26,24,21,0.2)' }} />
+          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 9, fontWeight: 400, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#6B5E52' }}>Magical Constructions</span>
         </a>
 
         {/* Desktop links */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 40 }}>
-          {links.map(l => (
-            <a key={l} href={`#${l.toLowerCase()}`} style={{ fontFamily: "'Inter', sans-serif", fontSize: 12, fontWeight: 400, letterSpacing: '0.08em', color: '#5C5248', transition: 'color 0.2s' }}
-              onMouseEnter={e => (e.currentTarget.style.color = '#1C1A18')}
-              onMouseLeave={e => (e.currentTarget.style.color = '#5C5248')}
-            >{l}</a>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 40 }} className="desktop-nav">
+          {links.map(link => (
+            <a
+              key={link.label}
+              href={link.href}
+              style={{
+                fontFamily: "'Inter', sans-serif",
+                fontSize: 10,
+                letterSpacing: '0.2em',
+                textTransform: 'uppercase',
+                color: '#4A3F35',
+                fontWeight: 400,
+                position: 'relative',
+                paddingBottom: 2,
+              }}
+              onMouseEnter={e => {
+                const el = e.currentTarget.querySelector('.link-line') as HTMLElement
+                if (el) el.style.transform = 'scaleX(1)'
+              }}
+              onMouseLeave={e => {
+                const el = e.currentTarget.querySelector('.link-line') as HTMLElement
+                if (el) el.style.transform = 'scaleX(0)'
+              }}
+            >
+              {link.label}
+              <span className="link-line" style={{
+                position: 'absolute', bottom: 0, left: 0, right: 0, height: 1,
+                background: '#B8977A', transform: 'scaleX(0)', transformOrigin: 'left',
+                transition: 'transform 0.3s cubic-bezier(0.76, 0, 0.24, 1)',
+              }} />
+            </a>
           ))}
-          <a href="#contact" style={{
-            fontFamily: "'Inter', sans-serif", fontSize: 11, fontWeight: 400, letterSpacing: '0.16em', textTransform: 'uppercase',
-            padding: '10px 24px', background: '#1C1A18', color: '#FAF7F4',
-            transition: 'background 0.3s',
-          }}
-            onMouseEnter={e => (e.currentTarget.style.background = '#3A3530')}
-            onMouseLeave={e => (e.currentTarget.style.background = '#1C1A18')}
-          >Get a Quote</a>
+          <a href="#contact" className="btn-primary" style={{ padding: '12px 28px' }}>
+            <span>Get a Quote</span>
+          </a>
         </div>
 
-        {/* Mobile hamburger */}
-        <button onClick={() => setOpen(true)} style={{ display: 'none', color: '#1C1A18' }}>
-          <Menu size={20} strokeWidth={1.5} />
+        {/* Hamburger */}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          style={{ display: 'none', flexDirection: 'column', gap: 5, padding: 8 }}
+          className="hamburger"
+          aria-label="Menu"
+        >
+          <motion.span animate={{ rotate: menuOpen ? 45 : 0, y: menuOpen ? 7 : 0 }} style={{ display: 'block', width: 22, height: 1, background: '#1A1815', transformOrigin: 'center' }} />
+          <motion.span animate={{ opacity: menuOpen ? 0 : 1 }} style={{ display: 'block', width: 22, height: 1, background: '#1A1815' }} />
+          <motion.span animate={{ rotate: menuOpen ? -45 : 0, y: menuOpen ? -7 : 0 }} style={{ display: 'block', width: 22, height: 1, background: '#1A1815', transformOrigin: 'center' }} />
         </button>
-      </nav>
+      </motion.nav>
 
-      {/* Mobile overlay */}
+      {/* Mobile menu */}
       <AnimatePresence>
-        {open && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            style={{ position: 'fixed', inset: 0, background: '#FAF7F4', zIndex: 2000, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 40 }}>
-            <button onClick={() => setOpen(false)} style={{ position: 'absolute', top: 24, right: 56, color: '#1C1A18' }}><X size={20} strokeWidth={1.5} /></button>
-            {[...links, 'Quote'].map((l, i) => (
-              <motion.a key={l} href={`#${l.toLowerCase()}`} onClick={() => setOpen(false)}
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}
-                style={{ fontFamily: "'Playfair Display', serif", fontSize: 40, fontWeight: 400, color: '#1C1A18' }}>
-                {l}
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+              background: '#F8F5F0', zIndex: 99,
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+              gap: 40,
+            }}
+          >
+            {links.map((link, i) => (
+              <motion.a
+                key={link.label}
+                href={link.href}
+                onClick={() => setMenuOpen(false)}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.08, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: 36,
+                  fontWeight: 400,
+                  color: '#1A1815',
+                  letterSpacing: '0.02em',
+                }}
+              >
+                {link.label}
               </motion.a>
             ))}
+            <motion.a
+              href="#contact"
+              onClick={() => setMenuOpen(false)}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+              className="btn-primary"
+            >
+              <span>Get a Quote</span>
+            </motion.a>
           </motion.div>
         )}
       </AnimatePresence>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .desktop-nav { display: none !important; }
+          .hamburger { display: flex !important; }
+        }
+      `}</style>
     </>
   )
 }

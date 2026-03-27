@@ -1,46 +1,70 @@
-import { useEffect, useRef, useState } from 'react'
-import { useInView } from 'framer-motion'
-import { motion } from 'framer-motion'
+import { useRef, useEffect, useState } from 'react'
+import { motion, useInView } from 'framer-motion'
 
-function Counter({ target, suffix }: { target: number; suffix: string }) {
+function Counter({ target, suffix = '' }: { target: number; suffix?: string }) {
   const [count, setCount] = useState(0)
-  const ref = useRef<HTMLSpanElement>(null)
-  const inView = useInView(ref, { once: true })
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-50px' })
+
   useEffect(() => {
     if (!inView) return
-    let s = 0
-    const inc = target / (2000 / 16)
-    const t = setInterval(() => {
-      s += inc
-      if (s >= target) { setCount(target); clearInterval(t) }
-      else setCount(Math.floor(s))
-    }, 16)
-    return () => clearInterval(t)
+    let start = 0
+    const duration = 2200
+    const startTime = performance.now()
+    const animate = (now: number) => {
+      const elapsed = now - startTime
+      const progress = Math.min(elapsed / duration, 1)
+      const ease = 1 - Math.pow(1 - progress, 3)
+      start = Math.round(ease * target)
+      setCount(start)
+      if (progress < 1) requestAnimationFrame(animate)
+    }
+    requestAnimationFrame(animate)
   }, [inView, target])
+
   return <span ref={ref}>{count}{suffix}</span>
 }
 
-const stats = [
-  { n: 150, s: '+', l: 'Projects Completed' },
-  { n: 8, s: '+', l: 'Years Experience' },
-  { n: 100, s: '%', l: 'Sydney-Based' },
-  { n: 5, s: '★', l: 'Google Rated' },
-]
-
 export default function StatsBar() {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-80px' })
+
+  const stats = [
+    { value: 150, suffix: '+', label: 'Projects Completed', sub: 'Across Sydney' },
+    { value: 8, suffix: '+', label: 'Years Experience', sub: 'Est. 2020' },
+    { value: 100, suffix: '%', label: 'Sydney Based', sub: 'Local team' },
+    { value: 5, suffix: '★', label: 'Google Rating', sub: 'Verified reviews' },
+  ]
+
   return (
-    <motion.div
-      initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
-      style={{ background: '#F2EDE6', borderTop: '1px solid #E2D8CE', borderBottom: '1px solid #E2D8CE', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)' }}
-    >
-      {stats.map((st, i) => (
-        <div key={st.l} style={{ padding: '48px 32px', textAlign: 'center', ...(i > 0 && { borderLeft: '1px solid #E2D8CE' }) }}>
-          <div style={{ fontFamily: "'Playfair Display', serif", fontSize: 52, fontWeight: 500, color: '#1C1A18', lineHeight: 1 }}>
-            <Counter target={st.n} suffix={st.s} />
-          </div>
-          <div className="label-sm" style={{ marginTop: 10 }}>{st.l}</div>
-        </div>
-      ))}
-    </motion.div>
+    <section ref={ref} style={{ background: '#1A1815', padding: '80px 72px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0 }}>
+        {stats.map((stat, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 30 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.8, delay: i * 0.12, ease: [0.16, 1, 0.3, 1] }}
+            style={{
+              padding: '40px 48px',
+              borderRight: i < 3 ? '1px solid rgba(248,245,240,0.06)' : 'none',
+            }}
+          >
+            <div style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: 56,
+              fontWeight: 300,
+              color: '#F8F5F0',
+              lineHeight: 1,
+              marginBottom: 12,
+            }}>
+              {inView ? <Counter target={stat.value} suffix={stat.suffix} /> : `0${stat.suffix}`}
+            </div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(248,245,240,0.5)', fontWeight: 400, marginBottom: 4 }}>{stat.label}</div>
+            <div style={{ fontFamily: "'Inter', sans-serif", fontSize: 11, color: '#B8977A', fontWeight: 300 }}>{stat.sub}</div>
+          </motion.div>
+        ))}
+      </div>
+    </section>
   )
 }

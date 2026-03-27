@@ -1,44 +1,96 @@
-import { motion } from 'framer-motion'
+import { useRef } from 'react'
+import { motion, useInView } from 'framer-motion'
 import { Award, Camera, MapPin, Layers } from 'lucide-react'
 
-const features = [
-  { icon: Award, title: 'Every job like our own home', desc: 'We apply the same care and standard to your project that we would to our own.' },
-  { icon: Camera, title: 'Real photos, real results', desc: 'Every image on this site is from an actual Magical Constructions project. No stock.' },
-  { icon: MapPin, title: 'Sydney-based & accountable', desc: 'Local team, local knowledge. Available when you need us, responsive always.' },
-  { icon: Layers, title: 'Concept to completion', desc: 'We manage the entire project — design, materials, labour, finishing. All of it.' },
+const pillars = [
+  { icon: Award, title: 'Every job like our own home', desc: 'We apply the same standard of care and craftsmanship to your project that we would apply to our own.' },
+  { icon: Camera, title: 'Real photos, real results', desc: 'Every image on this site is from an actual Magical Constructions project. No stock. No staging.' },
+  { icon: MapPin, title: 'Sydney-based, always available', desc: 'Our entire team is local. We respond fast, communicate clearly, and show up when we say we will.' },
+  { icon: Layers, title: 'Full project management', desc: 'We handle everything from council checks to final inspection. You stay informed at every step.' },
 ]
 
-export default function WhyUs() {
+function Pillar({ pillar, index }: { pillar: typeof pillars[0]; index: number }) {
+  const Icon = pillar.icon
+  const colRef = useRef(null)
+  const colInView = useInView(colRef, { once: true, margin: '-60px' })
   return (
-    <section style={{ background: '#FFFFFF', padding: '120px 56px', borderTop: '1px solid #E2D8CE' }}>
-      <div style={{ maxWidth: 1280, margin: '0 auto' }}>
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}
-          style={{ marginBottom: 80, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 40, alignItems: 'end', borderBottom: '1px solid #E2D8CE', paddingBottom: 48 }}>
-          <div>
-            <div className="label-sm" style={{ marginBottom: 16 }}>The Magical Difference</div>
-            <h2 style={{ fontFamily: "'Playfair Display', serif", fontSize: 'clamp(36px, 4vw, 52px)', fontWeight: 500, color: '#1C1A18', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
-              No shortcuts.<br /><em style={{ fontStyle: 'italic', fontWeight: 400 }}>No excuses.</em>
-            </h2>
-          </div>
-          <p style={{ fontSize: 15, color: '#6B5E52', lineHeight: 1.75, fontWeight: 300 }}>
-            Sydney's premium homes deserve premium craftsmanship. We believe in doing the job once, doing it right, and standing behind every project we deliver.
-          </p>
-        </motion.div>
+    <motion.div
+      ref={colRef}
+      initial={{ opacity: 0, y: 30 }}
+      animate={colInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.9, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }}
+      style={{
+        borderRight: index < 3 ? '1px solid rgba(26,24,21,0.07)' : 'none',
+        paddingRight: index < 3 ? 48 : 0,
+        paddingLeft: index > 0 ? 48 : 0,
+      }}
+    >
+      <div style={{ marginBottom: 28 }}>
+        <Icon size={20} strokeWidth={1.2} color="#B8977A" />
+      </div>
+      <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 22, fontWeight: 400, color: '#1A1815', marginBottom: 16, lineHeight: 1.3 }}>{pillar.title}</h3>
+      <p style={{ fontFamily: "'Inter', sans-serif", fontSize: 13, color: '#6B5E52', fontWeight: 300, lineHeight: 1.75 }}>{pillar.desc}</p>
+    </motion.div>
+  )
+}
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0 }}>
-          {features.map((f, i) => {
-            const Icon = f.icon
-            return (
-              <motion.div key={f.title}
-                initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: i * 0.1 }}
-                style={{ paddingTop: 32, paddingRight: 40, ...(i > 0 && { paddingLeft: 40, borderLeft: '1px solid #E2D8CE' }), borderTop: '2px solid #1C1A18' }}>
-                <Icon size={20} strokeWidth={1.5} color="#9A8A7A" style={{ marginBottom: 20 }} />
-                <h3 style={{ fontFamily: "'Inter'", fontSize: 13, fontWeight: 500, color: '#1C1A18', marginBottom: 12, lineHeight: 1.4 }}>{f.title}</h3>
-                <p style={{ fontSize: 13, color: '#6B5E52', lineHeight: 1.7, fontWeight: 300 }}>{f.desc}</p>
-              </motion.div>
-            )
-          })}
+export default function WhyUs() {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: '-80px' })
+
+  return (
+    <section style={{ padding: '140px 72px', background: '#F8F5F0' }}>
+      <div ref={ref} style={{ marginBottom: 80 }}>
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={inView ? { opacity: 1, x: 0 } : {}}
+          transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+          style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 24 }}
+        >
+          <div style={{ width: 32, height: 1, background: '#B8977A' }} />
+          <span className="label-sm">The Magical Difference</span>
+        </motion.div>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+          <div style={{ overflow: 'hidden' }}>
+            <motion.h2
+              initial={{ y: '100%' }}
+              animate={inView ? { y: 0 } : {}}
+              transition={{ duration: 0.9, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: 'clamp(42px, 5vw, 68px)',
+                fontWeight: 300,
+                color: '#1A1815',
+                lineHeight: 1.1,
+              }}
+            >
+              No shortcuts.<br /><em>No excuses.</em>
+            </motion.h2>
+          </div>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={inView ? { opacity: 1 } : {}}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            style={{ maxWidth: 360, fontFamily: "'Inter', sans-serif", fontSize: 14, color: '#6B5E52', fontWeight: 300, lineHeight: 1.8, textAlign: 'right' }}
+          >
+            Sydney's premium homes deserve premium craftsmanship. We believe in doing the job once, doing it right, and standing behind every project we deliver.
+          </motion.p>
         </div>
+      </div>
+
+      {/* Divider */}
+      <motion.div
+        initial={{ scaleX: 0 }}
+        animate={inView ? { scaleX: 1 } : {}}
+        transition={{ duration: 1.2, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        style={{ height: 1, background: 'rgba(26,24,21,0.08)', transformOrigin: 'left', marginBottom: 72 }}
+      />
+
+      {/* Pillars */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 0 }}>
+        {pillars.map((pillar, i) => (
+          <Pillar key={i} pillar={pillar} index={i} />
+        ))}
       </div>
     </section>
   )
