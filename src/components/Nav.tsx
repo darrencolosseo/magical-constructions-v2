@@ -42,9 +42,9 @@ export default function Nav() {
       >
         {/* Logo */}
         <a href="/" style={{ display: 'flex', alignItems: 'center', gap: 10, textDecoration: 'none' }}>
-          <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 22, fontWeight: 500, color: '#1A1815', letterSpacing: '0.02em' }}>MC</span>
-          <span style={{ width: 1, height: 18, background: 'rgba(26,24,21,0.2)' }} />
-          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 9, fontWeight: 400, letterSpacing: '0.22em', textTransform: 'uppercase', color: '#6B5E52' }}>Magical Constructions</span>
+          <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: 22, fontWeight: 500, color: scrolled ? '#1A1815' : '#F8F5F0', letterSpacing: '0.02em', transition: 'color 0.4s ease' }}>MC</span>
+          <span style={{ width: 1, height: 18, background: scrolled ? 'rgba(26,24,21,0.2)' : 'rgba(248,245,240,0.3)', transition: 'background 0.4s ease' }} />
+          <span style={{ fontFamily: "'Inter', sans-serif", fontSize: 9, fontWeight: 400, letterSpacing: '0.22em', textTransform: 'uppercase', color: scrolled ? '#6B5E52' : 'rgba(248,245,240,0.7)', transition: 'color 0.4s ease' }}>Magical Constructions</span>
         </a>
 
         {/* Desktop links */}
@@ -58,10 +58,11 @@ export default function Nav() {
                 fontSize: 10,
                 letterSpacing: '0.2em',
                 textTransform: 'uppercase',
-                color: '#4A3F35',
+                color: scrolled ? '#4A3F35' : 'rgba(248,245,240,0.85)',
                 fontWeight: 400,
                 position: 'relative',
                 paddingBottom: 2,
+                transition: 'color 0.4s ease',
               }}
               onMouseEnter={e => {
                 const el = e.currentTarget.querySelector('.link-line') as HTMLElement
@@ -80,7 +81,7 @@ export default function Nav() {
               }} />
             </a>
           ))}
-          <a href="#contact" className="btn-primary" style={{ padding: '12px 28px' }}>
+          <a href="#contact" className="btn-primary" style={{ padding: '12px 28px', background: scrolled ? '#1A1815' : 'rgba(248,245,240,0.15)', border: scrolled ? 'none' : '1px solid rgba(248,245,240,0.5)', backdropFilter: scrolled ? 'none' : 'blur(4px)', transition: 'all 0.4s ease' }}>
             <span>Get a Quote</span>
           </a>
         </div>
@@ -92,9 +93,9 @@ export default function Nav() {
           className="hamburger"
           aria-label="Menu"
         >
-          <motion.span animate={{ rotate: menuOpen ? 45 : 0, y: menuOpen ? 7 : 0 }} style={{ display: 'block', width: 22, height: 1, background: '#1A1815', transformOrigin: 'center' }} />
-          <motion.span animate={{ opacity: menuOpen ? 0 : 1 }} style={{ display: 'block', width: 22, height: 1, background: '#1A1815' }} />
-          <motion.span animate={{ rotate: menuOpen ? -45 : 0, y: menuOpen ? -7 : 0 }} style={{ display: 'block', width: 22, height: 1, background: '#1A1815', transformOrigin: 'center' }} />
+          <motion.span animate={{ rotate: menuOpen ? 45 : 0, y: menuOpen ? 7 : 0 }} style={{ display: 'block', width: 22, height: 1, background: scrolled ? '#1A1815' : '#F8F5F0', transformOrigin: 'center', transition: 'background 0.4s ease' }} />
+          <motion.span animate={{ opacity: menuOpen ? 0 : 1 }} style={{ display: 'block', width: 22, height: 1, background: scrolled ? '#1A1815' : '#F8F5F0', transition: 'background 0.4s ease' }} />
+          <motion.span animate={{ rotate: menuOpen ? -45 : 0, y: menuOpen ? -7 : 0 }} style={{ display: 'block', width: 22, height: 1, background: scrolled ? '#1A1815' : '#F8F5F0', transformOrigin: 'center', transition: 'background 0.4s ease' }} />
         </button>
       </motion.nav>
 

@@ -100,7 +100,7 @@ export default function Gallery() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.97 }}
               transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-              style={{ position: 'relative', overflow: 'hidden', aspectRatio: i % 5 === 0 ? '4/5' : '4/3', cursor: 'pointer' }}
+              style={{ position: 'relative', overflow: 'hidden', aspectRatio: '4/3', cursor: 'pointer' }}
               whileHover="hover"
             >
               <motion.img
