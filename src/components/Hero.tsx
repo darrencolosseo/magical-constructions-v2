@@ -22,6 +22,8 @@ export default function Hero() {
       {/* Overlays */}
       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(105deg, rgba(26,24,21,0.72) 0%, rgba(26,24,21,0.35) 55%, rgba(26,24,21,0.15) 100%)' }} />
       <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(26,24,21,0.5) 0%, transparent 50%)' }} />
+      {/* Top nav gradient — ensures nav is always legible */}
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(26,24,21,0.55) 0%, transparent 22%)' }} />
 
       {/* Content */}
       <motion.div
